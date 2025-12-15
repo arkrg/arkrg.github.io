@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강주영 | Embedded Developer</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Theme: Dark Gray & Terminal Green */
+            --sidebar-bg: #1e1e1e;
+            --content-bg: #f3f4f6;
+            
+            --accent-green: #00c853;
+            --text-inactive: #888888;
+            
+            --text-dark: #111;
+            --font-main: 'Noto Sans KR', sans-serif;
+            --font-code: 'Roboto Mono', monospace;
+            
+            --sidebar-width: 280px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* JS로 스크롤 속도를 제어하기 위해 CSS scroll-behavior는 제거합니다. */
+        /* html { scroll-behavior: smooth; } */
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--content-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+
+            /* 전체 드래그 방지 */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* 드래그 허용 클래스 */
+        .selectable {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+            cursor: text;
+        }
+
+        /* --- 1. Left Sidebar (Fixed & Clean Align) --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            background-color: var(--sidebar-bg);
+            color: #eee;
+            padding: 4rem 2rem; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 100;
+            border-right: 1px solid #333;
+            overflow-y: auto;
+        }
+
+        .sidebar-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        /* 증명사진 프레임 (이미지 적용됨) */
+        .profile-photo-frame {
+            width: 100px;
+            height: 133px; /* 3:4 비율 */
+            background-color: #2a2a2a;
+            border: 1px solid var(--accent-green);
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .profile-photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* 흑백 필터 (선택 사항) */
+            filter: grayscale(20%);
+            transition: filter 0.3s;
+        }
+        
+        .profile-photo-frame:hover img {
+            filter: grayscale(0%);
+        }
+
+        .profile-header { margin-bottom: 2rem; width: 100%; }
+        .profile-header h1 {
+            font-family: var(--font-main);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.8rem;
+            color: #fff;
+            line-height: 1.2;
+        }
+        .profile-header h1 span { color: var(--accent-green); }
+
+        .role-badge {
+            display: inline-block;
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            background-color: rgba(0, 200, 83, 0.05);
+        }
+
+        .profile-desc {
+            font-size: 0.85rem; 
+            color: #aaa; 
+            line-height: 1.5;
+            margin-top: 0;
+        }
+
+        .contact-links { width: 100%; margin-bottom: 3rem; }
+        .contact-btn { 
+            color: #ccc; 
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px;
+            border-radius: 6px;
+            background-color: #2a2a2a;
+            border: 1px solid #333;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        .contact-btn i { font-size: 1.1rem; width: 20px; text-align: center; }
+        .contact-btn:hover { 
+            color: #000; background-color: var(--accent-green); border-color: var(--accent-green);
+            font-weight: 700; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 200, 83, 0.2);
+        }
+
+        .nav-menu { 
+            list-style: none; padding: 0; margin: 0; width: 100%;
+            display: flex; flex-direction: column; gap: 1.2rem;
+        }
+        .nav-link {
+            text-decoration: none; color: var(--text-inactive);
+            font-family: var(--font-code); font-size: 1rem;
+            transition: all 0.2s ease; display: flex; align-items: center;
+            font-weight: 500; padding-left: 0;
+            cursor: pointer;
+        }
+        .nav-link:hover { color: #fff; }
+        .nav-link.active { color: var(--accent-green); font-weight: 700; }
+
+        .sidebar-footer { font-size: 0.75rem; color: #555; font-family: var(--font-code); margin-top: 2rem; }
+
+        /* --- 2. Main Content --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 5rem 6rem;
+        }
+
+        section { margin-bottom: 8rem; }
+
+        .section-header {
+            display: flex; align-items: center; gap: 1rem; margin-bottom: 2.5rem;
+            border-bottom: 2px solid #ddd; padding-bottom: 1rem;
+        }
+        .section-title {
+            font-family: var(--font-code); font-size: 1.5rem; font-weight: 700; color: var(--text-dark); text-transform: uppercase;
+        }
+        .section-number {
+            color: var(--accent-green); font-family: var(--font-code); font-weight: 700; font-size: 1.2rem;
+        }
+
+        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+        .info-item {
+            background: #fff; padding: 1.5rem; border-left: 3px solid var(--accent-green);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .info-label { font-family: var(--font-code); color: #888; font-size: 0.85rem; display: block; margin-bottom: 0.5rem; }
+        .info-value { font-size: 1.1rem; font-weight: 500; color: #000; }
+
+        .exp-item { display: flex; gap: 2rem; margin-bottom: 2.5rem; position: relative; }
+        .exp-date {
+            min-width: 140px; font-family: var(--font-code); font-weight: 700; color: #666; text-align: right; padding-top: 0.2rem;
+        }
+        .exp-content { border-left: 1px solid #ccc; padding-left: 2rem; padding-bottom: 1rem; }
+        .exp-content h3 { font-size: 1.2rem; margin-bottom: 0.3rem; }
+        .exp-content p { color: #555; font-size: 0.95rem; }
+
+        .tech-stack { margin-bottom: 2rem; }
+        .tech-label { font-family: var(--font-code); font-weight: 700; margin-bottom: 0.8rem; display: block; color: #388E3C; }
+        .tech-tags { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+        .tech-tag {
+            background: #e8f5e9; color: #2e7d32; padding: 0.4rem 1rem; font-size: 0.9rem;
+            font-family: var(--font-code); border: 1px solid #c8e6c9;
+        }
+
+        .project-list { display: flex; flex-direction: column; gap: 1.5rem; }
+        .project-row {
+            background: #fff; display: flex; align-items: stretch;
+            border: 1px solid #e5e5e5; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer; position: relative; overflow: hidden;
+        }
+        .project-row:hover {
+            transform: translateX(10px); border-color: var(--accent-green);
+            box-shadow: -5px 5px 0px rgba(0, 200, 83, 0.1);
+        }
+        .p-status { width: 6px; background-color: #ddd; flex-shrink: 0; transition: 0.3s; }
+        .project-row:hover .p-status { background-color: var(--accent-green); }
+
+        /* 프로젝트 대표 이미지 썸네일 (이미지 적용됨) */
+        .p-thumbnail {
+            width: 120px; background-color: #f8f9fa; border-right: 1px solid #eee;
+            display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
+        }
+        .p-thumbnail img { 
+            width: 100%; height: 100%; object-fit: cover; 
+            transition: transform 0.3s ease;
+        }
+        .project-row:hover .p-thumbnail img {
+            transform: scale(1.1); /* 호버 시 줌 효과 */
+        }
+
+        .p-main { padding: 1.8rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .p-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+        .p-title { font-size: 1.3rem; font-weight: 700; }
+        .p-period { font-family: var(--font-code); font-size: 0.8rem; color: #888; }
+        .p-desc { color: #555; font-size: 0.95rem; margin-bottom: 0.8rem; }
+        .p-tags { display: flex; gap: 0.5rem; }
+        .p-tag { font-size: 0.75rem; font-family: var(--font-code); color: #555; background: #f5f5f5; padding: 2px 8px; }
+        
+        .p-icon { 
+            width: 60px; display: flex; align-items: center; justify-content: center; 
+            background: transparent; color: #ddd; font-size: 1.2rem; transition: all 0.3s ease;
+        }
+        .project-row:hover .p-icon { color: var(--accent-green); transform: translateX(5px); }
+
+        /* Modal */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 1000;
+            backdrop-filter: grayscale(100%);
+        }
+        .modal.show { display: flex; align-items: center; justify-content: center; }
+        .modal-content {
+            background: #fff; width: 90%; max-width: 800px; max-height: 90vh;
+            border: 2px solid var(--accent-green);
+            box-shadow: 0 0 30px rgba(0, 200, 83, 0.2);
+            overflow-y: auto; padding: 0;
+        }
+        .modal-header {
+            background: var(--sidebar-bg); color: #fff; padding: 2rem;
+            border-bottom: 4px solid var(--accent-green);
+            position: relative;
+        }
+        
+        .modal-title { font-family: var(--font-main); font-size: 1.6rem; font-weight: 700; margin-bottom: 0.5rem; }
+        
+        .close-btn { position: absolute; top: 1.5rem; right: 2rem; color: #fff; font-size: 2rem; cursor: pointer; }
+        .close-btn:hover { color: var(--accent-green); }
+        .modal-body { padding: 2.5rem; }
+        
+        .modal-section-title { 
+            font-family: var(--font-main);
+            font-weight: 700; font-size: 1.1rem;
+            color: var(--sidebar-bg); 
+            border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; 
+            margin-bottom: 1rem; margin-top: 2rem; 
+        }
+        .modal-section-title:first-child { margin-top: 0; }
+
+        #modal-trouble-wrap, #modal-reflections-wrap {
+            margin-top: 2rem;
+        }
+        
+        .modal-list li { margin-bottom: 0.5rem; list-style-type: square; color: #444; margin-left: 1.2rem; }
+        
+        .modal-text {
+            font-size: 0.95rem; color: #555; line-height: 1.7; white-space: pre-line;
+        }
+
+        .modal-link { 
+            display: inline-block; margin-top: 3rem; 
+            background: var(--sidebar-bg); color: #fff; 
+            padding: 1rem 2.5rem; text-decoration: none; 
+            font-family: var(--font-code); font-weight: 700; 
+            transition: 0.2s; border-radius: 4px;
+        }
+        .modal-link:hover { background: var(--accent-green); color: #000; }
+
+        @media (max-width: 900px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; padding: 2rem; border-bottom: 1px solid #333; overflow-y: visible; }
+            .nav-menu { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 1rem; }
+            .main-content { margin-left: 0; width: 100%; padding: 2rem 1.5rem; }
+            .info-grid { grid-template-columns: 1fr; }
+            .exp-item { flex-direction: column; gap: 0.5rem; }
+            .exp-date { text-align: left; min-width: auto; }
+            .exp-content { border-left: 2px solid #ddd; padding-left: 1rem; margin-left: 0.5rem; }
+            .profile-photo-frame { margin: 0 auto 1.5rem auto; }
+            .profile-header { text-align: center; }
+            .contact-links { margin-bottom: 1rem; }
+            .sidebar-content { align-items: center; }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false" ondragstart="return false">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <!-- 증명사진: 플레이스홀더 이미지 적용 -->
+            <div class="profile-photo-frame">
+                <img src="https://placehold.co/300x400/333333/00c853?text=Profile+Img" alt="강주영 증명사진">
+            </div>
+
+            <div class="profile-header">
+                <h1>강주영<span>.</span></h1>
+                <span class="role-badge">&lt;Embedded_Dev /&gt;</span>
+                <p class="profile-desc">
+                    FPGA & RISC-V Specialist.<br>
+                    Hardware/Software Integration.
+                </p>
+            </div>
+            
+            <div class="contact-links">
+                <a href="https://github.com/ahnyouhan" target="_blank" class="contact-btn">
+                    <i class="fab fa-github"></i> Git Hub
+                </a>
+            </div>
+            
+            <ul class="nav-menu">
+                <li><a href="#about" class="nav-link active">01. About Me</a></li>
+                <li><a href="#experience" class="nav-link">02. Experience</a></li>
+                <li><a href="#skills" class="nav-link">03. Tech Stack</a></li>
+                <li><a href="#projects" class="nav-link">04. Projects</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <p>Made by YH</p>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Sections -->
+        <section id="about">
+            <div class="section-header">
+                <span class="section-number">01</span>
+                <h2 class="section-title">About Me</h2>
+            </div>
+            <p class="selectable" style="font-size: 1.1rem; margin-bottom: 2rem; max-width: 800px;">
+                안녕하세요, <strong>강주영</strong>입니다. 하드웨어의 논리적 설계부터 소프트웨어의 유연한 제어까지, 시스템 전체를 아우르는 개발을 지향합니다.
+            </p>
+            <div class="info-grid selectable">
+                <div class="info-item">
+                    <span class="info-label">EDUCATION</span>
+                    <span class="info-value">국립목포대학교<br>정보통신공학과</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">FOCUS AREA</span>
+                    <span class="info-value">FPGA, Embedded System,<br>Digital Logic Design</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">CONTACT</span>
+                    <span class="info-value selectable">010-1234-5678<br>juyoung.kang@email.com</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">GITHUB</span>
+                    <span class="info-value">github.com/kang-dev</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience">
+            <div class="section-header">
+                <span class="section-number">02</span>
+                <h2 class="section-title">Experience</h2>
+            </div>
+            <div class="exp-item">
+                <div class="exp-date">2025.01 - 02</div>
+                <div class="exp-content">
+                    <h3>FPGA 디지털 회로 설계 전문가 과정</h3>
+                    <p>Xilinx Vivado & Verilog HDL 실무 프로젝트 (160시간 수료)</p>
+                </div>
+            </div>
+            <div class="exp-item">
+                <div class="exp-date">2024.11</div>
+                <div class="exp-content">
+                    <h3>교내 임베디드 시스템 경진대회 [은상]</h3>
+                    <p>영상 처리 하드웨어 가속기 설계</p>
+                </div>
+            </div>
+            <div class="exp-item">
+                <div class="exp-date">2019 - 2026</div>
+                <div class="exp-content">
+                    <h3>국립목포대학교 학사</h3>
+                    <p>정보통신공학 전공 / 학점 4.0/4.5</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills">
+            <div class="section-header">
+                <span class="section-number">03</span>
+                <h2 class="section-title">Tech Stack</h2>
+            </div>
+            <div class="tech-stack">
+                <span class="tech-label">CORE LANGUAGES</span>
+                <div class="tech-tags">
+                    <span class="tech-tag">Verilog HDL</span>
+                    <span class="tech-tag">SystemVerilog</span>
+                    <span class="tech-tag">C / C++</span>
+                    <span class="tech-tag">Python</span>
+                </div>
+            </div>
+            <div class="tech-stack">
+                <span class="tech-label">HARDWARE & TOOLS</span>
+                <div class="tech-tags">
+                    <span class="tech-tag">Xilinx Vivado</span>
+                    <span class="tech-tag">Vitis IDE</span>
+                    <span class="tech-tag">STM32</span>
+                    <span class="tech-tag">FPGA (Basys3, Zybo)</span>
+                    <span class="tech-tag">RISC-V Architecture</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects">
+            <div class="section-header">
+                <span class="section-number">04</span>
+                <h2 class="section-title">Selected Works</h2>
+            </div>
+            <div class="project-list">
+                <!-- Project 1 -->
+                <div class="project-row" onclick="openModal('video-filter')">
+                    <div class="p-status"></div>
+                    <!-- 플레이스홀더 이미지 적용 -->
+                    <div class="p-thumbnail"><img src="https://placehold.co/200x200/eeeeee/cccccc?text=Video+Filter" alt="프로젝트 이미지"></div>
+                    <div class="p-main">
+                        <div class="p-header">
+                            <span class="p-title">영상 처리 및 필터 구현</span>
+                            <span class="p-period">2025.11 ~ 12</span>
+                        </div>
+                        <p class="p-desc">FPGA 기반 실시간 영상 필터(Convex Lens) 및 VGA 컨트롤러 설계</p>
+                        <div class="p-tags"><span class="p-tag">Verilog</span><span class="p-tag">FPGA</span></div>
+                    </div>
+                    <div class="p-icon"><i class="fas fa-arrow-right"></i></div>
+                </div>
+                <!-- Project 2 -->
+                <div class="project-row" onclick="openModal('risc-v')">
+                    <div class="p-status"></div>
+                    <div class="p-thumbnail"><img src="https://placehold.co/200x200/eeeeee/cccccc?text=RISC-V" alt="프로젝트 이미지"></div>
+                    <div class="p-main">
+                        <div class="p-header">
+                            <span class="p-title">RISC-V Core 아키텍처</span>
+                            <span class="p-period">2025.09 ~ 10</span>
+                        </div>
+                        <p class="p-desc">Single/Multi-Cycle 프로세서 설계 및 AMBA 버스 통합</p>
+                        <div class="p-tags"><span class="p-tag">SystemVerilog</span><span class="p-tag">RISC-V</span></div>
+                    </div>
+                    <div class="p-icon"><i class="fas fa-arrow-right"></i></div>
+                </div>
+                <!-- Project 3 -->
+                <div class="project-row" onclick="openModal('axi-spi')">
+                    <div class="p-status"></div>
+                    <div class="p-thumbnail"><img src="https://placehold.co/200x200/eeeeee/cccccc?text=AXI+SPI" alt="프로젝트 이미지"></div>
+                    <div class="p-main">
+                        <div class="p-header">
+                            <span class="p-title">SPI/I2C & AXI Interface</span>
+                            <span class="p-period">2025.11</span>
+                        </div>
+                        <p class="p-desc">Microblaze SoC 연동 통신 IP 설계 및 드라이버 구현</p>
+                        <div class="p-tags"><span class="p-tag">AXI4-Lite</span><span class="p-tag">IP Design</span></div>
+                    </div>
+                    <div class="p-icon"><i class="fas fa-arrow-right"></i></div>
+                </div>
+                <!-- Project 4 -->
+                <div class="project-row" onclick="openModal('fitness')">
+                    <div class="p-status"></div>
+                    <div class="p-thumbnail"><img src="https://placehold.co/200x200/eeeeee/cccccc?text=Fitness+App" alt="프로젝트 이미지"></div>
+                    <div class="p-main">
+                        <div class="p-header">
+                            <span class="p-title">피트니스 통합 검색기</span>
+                            <span class="p-period">2025.07</span>
+                        </div>
+                        <p class="p-desc">Python 웹 크롤링 기반 상품 가격 비교 서비스</p>
+                        <div class="p-tags"><span class="p-tag">Python</span><span class="p-tag">Crawling</span></div>
+                    </div>
+                    <div class="p-icon"><i class="fas fa-arrow-right"></i></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Structure (Updated Order) -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title" class="modal-title">Project Title</h2>
+                <span id="modal-meta" style="font-size: 0.9rem; opacity: 0.8; font-family: var(--font-code);">Period / Team</span>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                
+                <!-- 1. 개요 (Summary) -->
+                <div class="modal-section-title">개요</div>
+                <p id="modal-summary" class="modal-text" style="border-left: 3px solid var(--accent-green); padding-left: 1rem;">Summary text...</p>
+                
+                <!-- 태그 (개요 아래 배치) -->
+                <div id="modal-tags" style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+
+                <!-- 2. 역할 (Role) -->
+                <div class="modal-section-title">역할</div>
+                <ul id="modal-role" class="modal-list"></ul>
+
+                <!-- 3. 상세내용 (Details) -->
+                <div class="modal-section-title">상세내용</div>
+                <ul id="modal-details" class="modal-list"></ul>
+
+                <!-- 4. 트러블슈팅 (Troubleshooting) -->
+                <div id="modal-trouble-wrap" style="display:none;">
+                    <div class="modal-section-title">트러블슈팅</div>
+                    <ul id="modal-trouble" class="modal-list"></ul>
+                </div>
+                
+                <!-- 5. 고찰 (Reflections) -->
+                <div id="modal-reflections-wrap" style="display:none;">
+                    <div class="modal-section-title">고찰</div>
+                    <p id="modal-reflections" class="modal-text"></p>
+                </div>
+
+                <div style="text-align: center;">
+                    <a href="https://github.com/ahnyouhan" target="_blank" class="modal-link">
+                        <i class="fab fa-github"></i> VIEW SOURCE CODE
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        document.onkeydown = function(e) { if(e.keyCode == 123) return false; } 
+
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('section');
+
+        // [부드러운 스크롤 애니메이션 함수] 
+        // duration: 이동 시간 (ms), 800ms = 0.8초
+        function smoothScrollTo(targetPosition, duration) {
+            const startPosition = window.pageYOffset;
+            const distance = targetPosition - startPosition;
+            let startTime = null;
+
+            function animation(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                
+                // Ease-in-out easing function (부드러운 가속/감속)
+                const ease = function(t, b, c, d) {
+                    t /= d / 2;
+                    if (t < 1) return c / 2 * t * t + b;
+                    t--;
+                    return -c / 2 * (t * (t - 2) - 1) + b;
+                };
+
+                const nextPosition = ease(timeElapsed, startPosition, distance, duration);
+                window.scrollTo(0, nextPosition);
+
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(animation);
+                }
+            }
+
+            requestAnimationFrame(animation);
+        }
+
+        // 메뉴 클릭 이벤트
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                if (targetSection) {
+                    // 상단 여백 보정 (섹션 헤더가 잘리지 않게)
+                    const offset = 80; 
+                    const targetPosition = targetSection.getBoundingClientRect().top + window.pageYOffset - offset;
+                    
+                    // 0.8초(800ms) 동안 부드럽게 이동
+                    smoothScrollTo(targetPosition, 800);
+                }
+            });
+        });
+
+        // 스크롤 시 메뉴 활성화 상태 변경
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= (sectionTop - 300)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        const projectData = {
+            "video-filter": {
+                title: "영상 처리 및 필터 구현",
+                period: "2025.11 ~ 2025.12 (4인 팀)",
+                summary: "실시간 영상 필터(Convex Lens 등) 및 VGA 컨트롤러 구현 프로젝트.",
+                reflections: "FPGA 타이밍 제어와 라인 버퍼 설계의 중요성 체득. 메모리 대역폭 문제 해결 경험.",
+                details: [
+                    "FPGA 보드 활용 실시간 카메라 영상 입력 처리",
+                    "Convex Lens, Grayscale 필터 Verilog 하드웨어 구현",
+                    "라인 버퍼(Line Buffer) 설계를 통한 데이터 처리 최적화",
+                    "VGA 타이밍 컨트롤러 직접 설계"
+                ],
+                role: [
+                    "라인 버퍼 아키텍처 설계",
+                    "VGA 컨트롤러 로직 작성",
+                    "전체 시스템 통합 디버깅"
+                ],
+                troubleshooting: [
+                    "라인 버퍼 읽기/쓰기 타이밍 불일치 문제 발생 → 상태머신(FSM) 상태 세분화로 해결",
+                    "고해상도 영상 처리 시 프레임 드랍 → 파이프라인 스테이지 추가로 처리량 증대"
+                ],
+                tags: ["Verilog", "FPGA", "Image Processing"]
+            },
+            "risc-v": {
+                title: "RISC-V Core 아키텍처",
+                period: "2025.09 ~ 10 (3인 팀)",
+                summary: "RISC-V 32I 명령어 집합 지원 프로세서 코어 설계.",
+                reflections: "프로세서의 구조를 바닥부터 설계하며 파이프라인의 원리와 해저드 처리의 중요성을 깊이 이해하게 되었습니다.",
+                details: [
+                    "Single-Cycle → Multi-Cycle 구조 고도화",
+                    "Hazard Detection & Forwarding Unit 구현",
+                    "AMBA 버스 프로토콜 통합"
+                ],
+                role: ["ALU 설계", "Control Unit FSM 설계"],
+                troubleshooting: [
+                    "Data Hazard로 인한 파이프라인 스톨 빈번 → Forwarding 유닛 로직 최적화"
+                ],
+                tags: ["RISC-V", "SystemVerilog", "AMBA"]
+            },
+            "axi-spi": {
+                title: "SPI/I2C & AXI Interface",
+                period: "2025.11 (개인)",
+                summary: "Microblaze SoC 환경 SPI/I2C 통신 IP 설계.",
+                reflections: "표준 인터페이스(AXI)를 준수하는 IP 설계의 중요성을 깨닫고, SoC 환경에서의 HW/SW 인터랙션을 경험했습니다.",
+                details: [
+                    "AMBA AXI4-Lite 슬레이브 IP 설계",
+                    "SPI/I2C Master 모듈 Verilog 구현",
+                    "Vitis 활용 C 드라이버 작성"
+                ],
+                role: ["RTL 설계 및 검증", "펌웨어 드라이버 작성"],
+                troubleshooting: [
+                    "Master/Slave 클럭 동기화 문제 발생 → 2-ff synchronizer 도입하여 해결",
+                    "AXI 프로토콜 타이밍 위반 → Vitis 디버거로 신호 분석 후 FSM 상태 천이 수정"
+                ],
+                tags: ["AXI4", "IP Design", "Microblaze"]
+            },
+            "fitness": {
+                title: "피트니스 통합 검색기",
+                period: "2025.07 (4인 팀)",
+                summary: "웹 크롤링 기반 피트니스 용품 가격 비교 서비스.",
+                reflections: "사용자 입장에서 필요한 데이터를 효율적으로 수집하고 가공하는 백엔드 로직의 중요성을 배웠습니다.",
+                details: ["Python Selenium/BeautifulSoup 크롤러 개발", "최저가 정렬 알고리즘"],
+                role: ["크롤링 엔진 코어 로직 개발"],
+                troubleshooting: [
+                    "동적 페이지 크롤링 시 데이터 누락 → Selenium Explicit Wait 적용",
+                    "과도한 요청으로 인한 차단 → User-Agent 로테이션 및 딜레이 적용"
+                ],
+                tags: ["Python", "Crawling"]
+            }
+        };
+
+        const modal = document.getElementById("project-modal");
+
+        function openModal(id) {
+            const data = projectData[id];
+            if(!data) return;
+
+            document.getElementById("modal-title").innerText = data.title;
+            document.getElementById("modal-meta").innerText = data.period;
+            document.getElementById("modal-summary").innerText = data.summary;
+            
+            // Details
+            const dList = document.getElementById("modal-details");
+            dList.innerHTML = "";
+            data.details.forEach(t => {
+                let li = document.createElement("li");
+                li.innerText = t;
+                dList.appendChild(li);
+            });
+
+            // Role
+            const rList = document.getElementById("modal-role");
+            rList.innerHTML = "";
+            data.role.forEach(t => {
+                let li = document.createElement("li");
+                li.innerText = t;
+                rList.appendChild(li);
+            });
+
+            // Troubleshooting (New)
+            const tList = document.getElementById("modal-trouble");
+            const tWrap = document.getElementById("modal-trouble-wrap");
+            tList.innerHTML = "";
+            if (data.troubleshooting && data.troubleshooting.length > 0) {
+                data.troubleshooting.forEach(t => {
+                    let li = document.createElement("li");
+                    li.innerText = t;
+                    tList.appendChild(li);
+                });
+                tWrap.style.display = "block";
+            } else {
+                tWrap.style.display = "none";
+            }
+
+            // Tags
+            const tContainer = document.getElementById("modal-tags");
+            tContainer.innerHTML = "";
+            data.tags.forEach(tag => {
+                let s = document.createElement("span");
+                s.className = "tech-tag";
+                s.innerText = tag;
+                tContainer.appendChild(s);
+            });
+
+            // Reflections
+            const refDiv = document.getElementById("modal-reflections-wrap");
+            if(data.reflections) {
+                document.getElementById("modal-reflections").innerText = data.reflections;
+                refDiv.style.display = "block";
+            } else {
+                refDiv.style.display = "none";
+            }
+
+            modal.classList.add("show");
+        }
+
+        function closeModal() {
+            modal.classList.remove("show");
+        }
+
+        window.onclick = function(e) {
+            if(e.target == modal) closeModal();
+        }
+    </script>
+</body>
+</html>

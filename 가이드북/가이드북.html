@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강주영 포트폴리오 수정 가이드북 v2.5 (폴더 관리형)</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #e0e7ff;
+            --secondary: #ec4899;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --code-bg: #1e293b;
+            --code-text: #f1f5f9;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.65;
+            word-break: keep-all;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding-bottom: 60px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.15), 0 8px 10px -6px rgba(79, 70, 229, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            margin: 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Sections */
+        .section-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            border-left: 6px solid var(--primary);
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge {
+            background-color: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Step 0 Special Style */
+        .critical-step {
+            border-left-color: var(--danger);
+            background-color: #fffbfc;
+        }
+        .critical-step .section-title { color: #991b1b; }
+        .critical-step .badge { background-color: var(--danger); }
+
+        /* Step 6 Special Style */
+        .important-step {
+            border-left-color: var(--secondary);
+        }
+        .important-step .section-title { color: #be185d; }
+        .important-step .badge { background-color: var(--secondary); }
+
+
+        /* Keywords Box */
+        .keyword-box {
+            background-color: white;
+            border: 2px solid var(--primary-light);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 20px 0;
+        }
+
+        .keyword-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .keyword-code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 1.1rem;
+            color: var(--secondary);
+            font-weight: 700;
+            background: #fdf2f8;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        /* Folder Structure */
+        .folder-tree {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Consolas', monospace;
+            font-size: 1rem;
+            color: #334155;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+        .tree-bold { font-weight: bold; color: var(--primary-dark); background: #e0e7ff; padding: 2px 6px; border-radius: 4px; }
+
+        /* Code Block Wrapper for Copy Button */
+        .code-wrapper {
+            position: relative;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .code-block {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            white-space: pre; /* 줄바꿈 유지 */
+            border: 1px solid #334155;
+        }
+
+        /* Copy Button */
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Pretendard';
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-btn.copied {
+            background: #34d399;
+            color: #064e3b;
+            border-color: #34d399;
+        }
+
+        /* Code Highlighting */
+        .hl-green { color: #34d399; font-weight: bold; } /* 값 입력 부분 */
+        .hl-blue { color: #60a5fa; } /* 태그 등 */
+        .hl-yellow { color: #facc15; font-weight: bold;} /* 주의사항 */
+        .hl-pink { color: #f472b6; } /* 중요 코드 */
+        .hl-comment { color: #94a3b8; font-style: italic; } /* 주석 */
+        .hl-del { color: #ef4444; text-decoration: line-through; opacity: 0.7; }
+
+        /* Lists */
+        ol { padding-left: 20px; color: var(--text-main); }
+        li { margin-bottom: 10px; }
+        ul li { margin-bottom: 6px; }
+
+        h3 {
+            font-size: 1.1rem;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        h3::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 18px;
+            background-color: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* Checklist */
+        .checklist {
+            background-color: #1e293b;
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-top: 50px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .checklist h3 { color: #fbbf24; margin-top: 0; }
+        .checklist ul { list-style: none; padding: 0; }
+        .checklist li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: start;
+        }
+        .checklist li:last-child { border-bottom: none; }
+        .checklist li::before {
+            content: "⚠️";
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            color: var(--text-sub);
+            font-size: 0.9rem;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>포트폴리오 수정 가이드북</h1>
+        <p>폴더 관리 & 상대 경로(Relative Path) 편</p>
+    </header>
+
+    <div class="section-card critical-step">
+        <div class="section-title">
+            <span class="badge">STEP 0</span>
+            <span>필수 준비 (★제일 먼저 하세요!)</span>
+        </div>
+        <p>이 작업을 안 하면 팝업창에 <strong>사진 코드가 글자로 그대로 노출</strong>됩니다.</p>
+        
+        <div class="keyword-box">
+            <span class="keyword-label">검색 키워드 (Ctrl + F)</span>
+            <div class="keyword-code">li.innerText = t;</div>
+        </div>
+
+        <p><strong>수정 방법:</strong> 검색해서 나오는 <strong>모든 부분(약 2~3곳)</strong>을 아래처럼 바꾸세요.</p>
+        
+        <div class="code-wrapper">
+            <div class="code-block"><span class="hl-del">li.innerText = t;</span> <span class="hl-comment">// 이거 지우고</span>
+<span class="hl-green">li.innerHTML = t;</span> <span class="hl-comment">// 이걸로 바꾸세요! (Text → HTML)</span></div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">
+            <span class="badge">STEP 1</span>
+            <span>폴더 만들고 파일 넣기</span>
+        </div>
+        <p>복잡한 인터넷 주소 대신 짧은 주소(<code>./pdf/..</code>)를 쓰려면 <strong>폴더 구조</strong>를 맞춰야 합니다.</p>
+        
+        <div class="folder-tree">
+            <div>📂 내_포트폴리오_폴더</div>
+            <div>│</div>
+            <div>├── 📄 index.html <span style="color:#64748b;">(지금 작업 중인 파일)</span></div>
+            <div>│</div>
+            <div>└── 📂 <span class="tree-bold">assets</span> <span style="color:#64748b;">(새로 만들기)</span></div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;│</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;├── 📂 <span class="tree-bold">pdf</span> <span style="color:#64748b;">(PDF 파일 넣는 곳)</span></div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;└── 📂 <span class="tree-bold">images</span> <span style="color:#64748b;">(사진 넣는 곳)</span></div>
+        </div>
+
+        <p><strong>✅ 중요 포인트:</strong></p>
+        <ul>
+            <li><code>assets</code> 라는 폴더를 만들고 그 안에 사진과 PDF를 정리해서 넣으세요.</li>
+            <li>GitHub에 올릴 때도 <strong>이 폴더들을 통째로</strong> 드래그해서 올려야 연결됩니다.</li>
+        </ul>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">
+            <span class="badge">STEP 2-5</span>
+            <span>기본 정보 & 썸네일 수정</span>
+        </div>
+        <p><code>index.html</code> 파일에서 아래 키워드로 검색(Ctrl+F)하여 내용을 수정하세요.</p>
+        <div style="background: #f1f5f9; padding: 15px; border-radius: 8px;">
+            <ul style="margin:0; padding-left: 20px;">
+                <li><strong>프로필 사진:</strong> <code>alt="강주영 증명사진"</code> 검색 → <code>src</code> 변경</li>
+                <li><strong>이름:</strong> <code>강주영</code> 검색 → 본인 이름으로 변경</li>
+                <li><strong>메인 소개:</strong> <code>안녕하세요, &lt;strong&gt;강주영</code> 검색</li>
+                <li><strong>경력 사항:</strong> <code>FPGA 디지털 회로 설계</code> 검색</li>
+                <li><strong>프로젝트 썸네일:</strong> <code>alt="프로젝트 이미지"</code> 검색 → <code>src</code> 변경</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section-card important-step">
+        <div class="section-title">
+            <span class="badge">STEP 6</span>
+            <span>상세 팝업창(Modal) 수정 ★핵심</span>
+        </div>
+        <p>이제 인터넷 주소(https://...)가 아니라 <strong>짧은 폴더 주소</strong>를 사용합니다.</p>
+
+        <div class="keyword-box">
+            <span class="keyword-label">데이터 수정 위치 검색</span>
+            <div class="keyword-code">const projectData = {</div>
+        </div>
+
+        <h3>1. 사진 넣는 코드 (상대 경로)</h3>
+        <p><code>./</code>는 "현재 위치(index.html이 있는 곳)"를 의미합니다.</p>
+        <div class="code-wrapper">
+            <button class="copy-btn" onclick="copyCode(this)">복사</button>
+            <div class="code-block">"&lt;img src='<span class="hl-green">./assets/images/파일이름.jpg</span>' style='width:100%; border-radius:8px; margin-top:10px;'&gt;",</div>
+        </div>
+
+        <h3>2. PDF 연결 코드 (상대 경로)</h3>
+        <div class="code-wrapper">
+            <button class="copy-btn" onclick="copyCode(this)">복사</button>
+            <div class="code-block"><span class="hl-comment">// assets/pdf 폴더 안에 있는 파일 연결</span>
+docUrl: "<span class="hl-green">./assets/pdf/파일이름.pdf</span>",</div>
+        </div>
+
+        <h3>3. 실제 적용 예시 (전체 모양)</h3>
+        <div class="code-wrapper">
+            <button class="copy-btn" onclick="copyCode(this)">복사</button>
+            <div class="code-block">"video-filter": {
+    title: "영상 처리 프로젝트",
+    <span class="hl-comment">// ▼ PDF 연결 (짧은 주소)</span>
+    docUrl: "<span class="hl-green">./assets/pdf/report.pdf</span>", 
+    details: [
+        "첫 번째 줄: 프로젝트 설명을 적습니다.",
+        "두 번째 줄: 상세 내용을 적습니다<span class="hl-yellow">,</span>", <span class="hl-comment">// 줄 끝 쉼표(,) 필수!</span>
+        
+        <span class="hl-comment">// ▼ 사진 연결 (짧은 주소)</span>
+        "<span class="hl-pink">&lt;img src='./assets/images/design.png' style='width:100%; border-radius:8px;'&gt;</span><span class="hl-yellow">,</span>"
+    ]
+},</div>
+        </div>
+    </div>
+
+    <div class="checklist">
+        <h3>🚨 자주 하는 실수 체크리스트</h3>
+        <ul>
+            <li><strong>이미지가 안 나와요(엑박):</strong> 파일명 대소문자를 확인하세요. (<code>Img.jpg</code>와 <code>img.jpg</code>는 다릅니다)</li>
+            <li><strong>따옴표 실수:</strong> 바깥은 쌍따옴표(<code>"</code>), 안쪽은 홑따옴표(<code>'</code>)를 써야 에러가 안 납니다.</li>
+            <li><strong>쉼표 누락:</strong> 문장 끝에 <code>,</code>(쉼표)가 없으면 다음 줄 내용이 사라집니다.</li>
+            <li><strong>GitHub에 올릴 때:</strong> index.html 파일 하나만 올리면 안 됩니다. <code>assets</code> 폴더도 같이 업로드하세요.</li>
+        </ul>
+    </div>
+
+    <footer>
+        &copy; Portfolio Guidebook - Relative Path Ver.
+    </footer>
+</div>
+
+<script>
+    function copyCode(btn) {
+        // 버튼 바로 다음의 code-block 텍스트 가져오기
+        const codeBlock = btn.nextElementSibling;
+        const text = codeBlock.innerText;
+
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = "완료!";
+            btn.classList.add('copied');
+            
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.remove('copied');
+            }, 2000);
+        }).catch(err => {
+            console.error('복사 실패:', err);
+            alert('복사에 실패했습니다. 직접 드래그해서 복사해주세요.');
+        });
+    }
+</script>
+
+</body>
+</html>
